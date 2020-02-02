@@ -36,22 +36,19 @@ public class SearchDocument {
 	private void searchContent(RestHighLevelClient client) {
 		SearchRequest searchRequest = new SearchRequest(Constants.index);
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		String createFakeText = "A*";
-//		String createFakeText = "AKYKJ9T0GB4AU8N*";
-//		String createFakeText = "K9WZ0S0XMS4T9YS64MNTPANY";
-//		String createFakeText = (new DocumentFactor()).createFakeText(5);
+		
+		// Text search here, what you want to search?
+//		String createFakeText = "A*";
+		String createFakeText = (new DocumentFactor()).createFakeText(5); //randon search
+		
 		System.out.println("search: "+createFakeText);
 		
 		MatchQueryBuilder queryStringQuery = QueryBuilders.matchQuery("fullText", createFakeText);
 		
-//		QueryStringQueryBuilder queryStringQuery = QueryBuilders.queryStringQuery("fullText:"+createFakeText + "*");
-//		WildcardQueryBuilder queryStringQuery = QueryBuilders.wildcardQuery("fullText", createFakeText + "*");
-//		RegexpQueryBuilder queryStringQuery = QueryBuilders.regexpQuery("fullText", createFakeText + ".*");
-//		QueryStringQueryBuilder queryStringQuery = QueryBuilders.queryStringQuery("number:253&fullText:"+createFakeText + "*");
-		
+		// Search filter, you want to search only the text? other field too?
 		BoolQueryBuilder bqb = QueryBuilders.boolQuery();
 		bqb.filter(queryStringQuery);
-		bqb.filter(QueryBuilders.matchQuery("number", 253));
+//		bqb.filter(QueryBuilders.matchQuery("number", 253));
 		
 		searchSourceBuilder.query(queryStringQuery);
 		searchSourceBuilder.from(0);

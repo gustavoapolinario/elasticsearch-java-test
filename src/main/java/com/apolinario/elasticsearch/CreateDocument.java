@@ -20,7 +20,7 @@ public class CreateDocument {
 		System.out.println("creating ES conn...");
 		RestHighLevelClient createConnection = (new ElasticSearchConnection()).createConnection();
 		System.out.println("creating new document...");
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 500000; i++) {
 			elasticsearchApplication.createNewDocument(createConnection);
 		}
 		System.out.println("end...");
