@@ -1,7 +1,6 @@
 package com.apolinario.elasticsearch;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.lucene.search.TotalHits;
@@ -14,7 +13,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
@@ -26,14 +24,19 @@ public class SearchDocument {
 		System.out.println("creating ES connection...");
 		RestHighLevelClient createConnection = (new ElasticSearchConnection()).createConnection();
 		System.out.println("searching document...");
-		elasticsearchApplication.searchContent(createConnection);
+		long timeTook = 0;
+		int total_requests = 100;
+		for (int i = 0; i < total_requests; i++) {
+			timeTook += elasticsearchApplication.searchContent(createConnection).millis();
+		}
+		System.out.println("time total: "+timeTook+" | avg: "+(timeTook/total_requests));
 		System.out.println("end...");
 		createConnection.close();
 	}
 	
 	
 	//https://www.elastic.co/guide/en/elasticsearch/client/java-rest/7.5/java-rest-high-search.html
-	private void searchContent(RestHighLevelClient client) {
+	private TimeValue searchContent(RestHighLevelClient client) {
 		SearchRequest searchRequest = new SearchRequest(Constants.index);
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		
@@ -47,8 +50,8 @@ public class SearchDocument {
 		
 		// Search filter, you want to search only the text? other field too?
 		BoolQueryBuilder bqb = QueryBuilders.boolQuery();
+		bqb.filter(QueryBuilders.matchQuery("number", 253));
 		bqb.filter(queryStringQuery);
-//		bqb.filter(QueryBuilders.matchQuery("number", 253));
 		
 		searchSourceBuilder.query(queryStringQuery);
 		searchSourceBuilder.from(0);
@@ -76,7 +79,7 @@ public class SearchDocument {
 //		TotalHits.Relation relation = totalHits.relation;
 		float maxScore = hits.getMaxScore();
 		System.out.println("{ hits: "+numHits+", maxScore:"+maxScore+"}");
-		SearchHit[] searchHits = hits.getHits();
+		/*SearchHit[] searchHits = hits.getHits();
 		for (SearchHit hit : searchHits) {
 //			String index = hit.getIndex();
 			String id = hit.getId();
@@ -90,6 +93,7 @@ public class SearchDocument {
 			double number = (Double) sourceAsMap.get("number");
 			System.out.println("{ id: "+id+",someName: "+someName+", number: "+number+", date: "+date+", fullText: "+fullText+"}");
 			
-		}
+		}*/
+		return took;
 	}
 }
