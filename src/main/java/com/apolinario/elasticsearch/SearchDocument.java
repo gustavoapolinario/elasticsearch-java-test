@@ -1,6 +1,7 @@
 package com.apolinario.elasticsearch;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.lucene.search.TotalHits;
@@ -10,9 +11,10 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
@@ -46,11 +48,12 @@ public class SearchDocument {
 		
 		System.out.println("search: "+createFakeText);
 		
-		MatchQueryBuilder queryStringQuery = QueryBuilders.matchQuery("fullText", createFakeText);
+		//MatchQueryBuilder queryStringQuery = QueryBuilders.matchQuery("fullText", createFakeText);
+		QueryStringQueryBuilder queryStringQuery = QueryBuilders.queryStringQuery("fullText:"+createFakeText + "*");
 		
 		// Search filter, you want to search only the text? other field too?
 		BoolQueryBuilder bqb = QueryBuilders.boolQuery();
-		bqb.filter(QueryBuilders.matchQuery("number", 253));
+		//bqb.filter(QueryBuilders.matchQuery("number", 253));
 		bqb.filter(queryStringQuery);
 		
 		searchSourceBuilder.query(queryStringQuery);
@@ -79,7 +82,7 @@ public class SearchDocument {
 //		TotalHits.Relation relation = totalHits.relation;
 		float maxScore = hits.getMaxScore();
 		System.out.println("{ hits: "+numHits+", maxScore:"+maxScore+"}");
-		/*SearchHit[] searchHits = hits.getHits();
+		SearchHit[] searchHits = hits.getHits();
 		for (SearchHit hit : searchHits) {
 //			String index = hit.getIndex();
 			String id = hit.getId();
@@ -93,7 +96,7 @@ public class SearchDocument {
 			double number = (Double) sourceAsMap.get("number");
 			System.out.println("{ id: "+id+",someName: "+someName+", number: "+number+", date: "+date+", fullText: "+fullText+"}");
 			
-		}*/
+		}
 		return took;
 	}
 }
